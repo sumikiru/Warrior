@@ -7,7 +7,9 @@
 #include "Components/CapsuleComponent.h"
 #include "DataAssets/HeroCharacterBasicConfig.h"
 #include "EnhancedInputSubsystems.h"
+#include "WarriorDebugHelper.h"
 #include "WarriorGameplayTags.h"
+#include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Input/WarriorInputComponent.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -21,6 +23,20 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+}
+
+void AWarriorHeroCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (WarriorAbilitySystemComponent && WarriorAttributeSet)
+	{
+		const FString ASCText = FString::Printf(TEXT("Owner Actor: %s, Avatar Actor: %s"),
+			*WarriorAbilitySystemComponent->GetOwnerActor()->GetActorLabel(),
+			*WarriorAbilitySystemComponent->GetAvatarActor()->GetActorLabel());
+		Debug::Print(TEXT("Ability System Component is valid. ") + ASCText, FColor::Green);
+		Debug::Print(TEXT("Attribute Set is valid. "), FColor::Green);
+	}
 }
 
 void AWarriorHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
