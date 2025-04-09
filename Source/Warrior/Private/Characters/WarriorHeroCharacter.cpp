@@ -7,11 +7,10 @@
 #include "Components/CapsuleComponent.h"
 #include "DataAssets/HeroCharacterBasicConfig.h"
 #include "EnhancedInputSubsystems.h"
-#include "WarriorDebugHelper.h"
 #include "WarriorGameplayTags.h"
-#include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Input/WarriorInputComponent.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
+#include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -29,13 +28,21 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (WarriorAbilitySystemComponent && WarriorAttributeSet)
+	/**
+	 * 不应使用IsValid()检查，软指针中的IsValid()表示是否已经加载完成。
+	 * 同步加载(Synchronous Loading)：
+	 * Cons: Blocks game thread.
+	 * Pros: Returns loaded object from the loading function
+	 * 异步加载(Asynchronous Loading)：
+	 * Pros: Loading happens in background
+	 * Cons: Loaded assets appears suddenly
+	 */
+	if (!CharacterStartUpData.IsNull())
 	{
-		const FString ASCText = FString::Printf(TEXT("Owner Actor: %s, Avatar Actor: %s"),
-			*WarriorAbilitySystemComponent->GetOwnerActor()->GetActorLabel(),
-			*WarriorAbilitySystemComponent->GetAvatarActor()->GetActorLabel());
-		Debug::Print(TEXT("Ability System Component is valid. ") + ASCText, FColor::Green);
-		Debug::Print(TEXT("Attribute Set is valid. "), FColor::Green);
+		if (UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.LoadSynchronous())
+		{
+			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+		}
 	}
 }
 
