@@ -9,15 +9,14 @@ class TS_GA_Shared_SpawnWeapon implements TS_GA_Shared_SpawnWeapon {
     // 事件激活能力(Event ActivateAbility)
     K2_ActivateAbility() {
         // 这里不需要super.K2_ActivateAbility();
-        UE.KismetSystemLibrary.PrintString(this, "来自TS", true, true, UE.LinearColor.Red, 200);
 
         // 生成，相当于蓝图的从类生成Actor
-        let SpawnedWeapon : UE.Actor = UE.GameplayStatics.BeginDeferredActorSpawnFromClass(
+        let SpawnedWeapon = UE.GameplayStatics.BeginDeferredActorSpawnFromClass(
             this,
             this.WeaponClassToSpawn,
             new UE.Transform(),
             UE.ESpawnActorCollisionHandlingMethod.AdjustIfPossibleButAlwaysSpawn,
-            this.GetAvatarActorFromActorInfo());
+            this.GetAvatarActorFromActorInfo()) as UE.WarriorWeaponBase;    // 强制指定返回值类型为子类
         UE.GameplayStatics.FinishSpawningActor(SpawnedWeapon, new UE.Transform());
 
         // Attach Actor To Component
@@ -30,6 +29,12 @@ class TS_GA_Shared_SpawnWeapon implements TS_GA_Shared_SpawnWeapon {
                 UE.EAttachmentRule.KeepWorld,
                 true);
         }
+
+        // Register Pawn Combat Component
+        this.GetPawnCombatComponentFromActorInfo().RegisterSpawnedWeapon(
+            this.WeaponTagToRegister,
+            SpawnedWeapon,
+            this.RegisterAsEquippedWeapon);
 
         this.K2_EndAbility();
     }

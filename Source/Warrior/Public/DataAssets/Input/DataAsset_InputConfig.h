@@ -19,6 +19,11 @@ struct FWarriorInputActionConfig
 	FGameplayTag InputTag;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UInputAction> InputAction;
+
+	bool IsValid() const
+	{
+		return InputTag.IsValid() && InputAction;
+	}
 };
 
 /**
@@ -34,6 +39,8 @@ public:
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FWarriorInputActionConfig> NativeInputActions;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
+	TArray<FWarriorInputActionConfig> AbilityInputActions;
 
 	// 灵敏度
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Look Sensitivity")	
