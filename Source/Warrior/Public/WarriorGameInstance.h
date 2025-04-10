@@ -28,7 +28,7 @@ public:
 	UPROPERTY()
 	FCall Call;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void CallTS(FString FunctionName, UObject* InObj);
 
 private:

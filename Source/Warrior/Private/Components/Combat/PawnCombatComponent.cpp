@@ -3,7 +3,6 @@
 
 #include "Components/Combat/PawnCombatComponent.h"
 
-#include "WarriorDebugHelper.h"
 
 void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegister, AWarriorWeaponBase* InWeaponToRegister, bool bRegisterAsEquippedWeapon)
 {
