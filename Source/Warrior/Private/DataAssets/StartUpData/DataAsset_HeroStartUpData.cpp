@@ -5,11 +5,7 @@
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
-
-bool FWarriorHeroAbilitySet::IsValid() const
-{
-	return InputTag.IsValid() && AbilityToGrant;
-}
+#include "WarriorTypes/WarriorStructTypes.h"
 
 void UDataAsset_HeroStartUpData::GiveToAbilitySystemComponent(UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel)
 {
@@ -28,10 +24,10 @@ void UDataAsset_HeroStartUpData::GrantAbilitiesWithInputTag(const TArray<FWarrio
 	{
 		if (!AbilitySet.IsValid())
 		{
-			return;
+			continue;
 		}
 
-		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
+		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant); //如果报错，导入WarriorGameplayAbility.h
 		AbilitySpec.SourceObject = InASCToGive->GetAvatarActor();
 		AbilitySpec.Level = ApplyLevel;
 		// 新增

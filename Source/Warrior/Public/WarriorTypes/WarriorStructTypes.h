@@ -1,9 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "GameplayTagContainer.h"
 
 #include "WarriorStructTypes.generated.h"
 
+class UInputMappingContext;
+class UWarriorGameplayAbility;
 class UWarriorHeroLinkedAnimLayer;
 /**
  * 1.关于generated.h
@@ -13,10 +16,30 @@ class UWarriorHeroLinkedAnimLayer;
  * CoreMinimal头文件包含一套来自UE4的核心编程环境的普遍存在类型（包含FString，FName，TArray等），被大多数头文件包含
  */
 USTRUCT(BlueprintType)
+struct FWarriorHeroAbilitySet
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (Categories = "InputTag"))
+	FGameplayTag InputTag;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UWarriorGameplayAbility> AbilityToGrant;
+
+	bool IsValid() const;
+};
+
+/**
+ * 将武器相关的Anim Layer/技能/按键直接保存到WeaponData中，Hero装备武器时生效，卸下时移除
+ */
+USTRUCT(BlueprintType)
 struct FWarriorHeroWeaponData
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UWarriorHeroLinkedAnimLayer> WeaponAnimLayerToLink;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UInputMappingContext> WeaponInputMappingContext;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
+	TArray<FWarriorHeroAbilitySet> DefaultWeaponAbilities;
 };

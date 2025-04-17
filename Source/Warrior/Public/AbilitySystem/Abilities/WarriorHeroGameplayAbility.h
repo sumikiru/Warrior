@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "WarriorHeroGameplayAbility.generated.h"
 
+class UWarriorAbilitySystemComponent;
 class UHeroCombatComponent;
 class AWarriorHeroController;
 class AWarriorHeroCharacter;
@@ -24,6 +25,8 @@ public:
 	AWarriorHeroController* GetHeroControllerFromActorInfo();
 	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
 	UHeroCombatComponent* GetHeroCombatComponentFromActorInfo();
+	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
+	UWarriorAbilitySystemComponent* GetWarriorAbilitySystemComponentFromActorInfo();
 
 private:
 	// TWeakObjectPtr适用于当需要避免循环引用，或访问但不控制对象的生命周期（不拥有对象，仅缓存对象引用）时的情况。
