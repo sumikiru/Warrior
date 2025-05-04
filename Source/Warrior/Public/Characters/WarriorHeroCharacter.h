@@ -6,6 +6,7 @@
 #include "Characters/WarriorBaseCharacter.h"
 #include "WarriorHeroCharacter.generated.h"
 
+class UWarriorHeroGameplayAbility;
 struct FGameplayTag;
 class UHeroCombatComponent;
 struct FInputActionValue;

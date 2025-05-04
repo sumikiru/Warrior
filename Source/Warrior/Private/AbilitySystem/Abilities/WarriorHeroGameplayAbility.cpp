@@ -4,7 +4,9 @@
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 
 #include "Characters/WarriorHeroCharacter.h"
+#include "Components/Combat/HeroCombatComponent.h"
 #include "Controllers/WarriorHeroController.h"
+#include "Items/Weapons/WarriorHeroWeapon.h"
 
 AWarriorHeroCharacter* UWarriorHeroGameplayAbility::GetHeroCharacterFromActorInfo()
 {
@@ -29,6 +31,16 @@ AWarriorHeroController* UWarriorHeroGameplayAbility::GetHeroControllerFromActorI
 UHeroCombatComponent* UWarriorHeroGameplayAbility::GetHeroCombatComponentFromActorInfo()
 {
 	return GetHeroCharacterFromActorInfo()->GetHeroCombatComponent();
+}
+
+AWarriorHeroWeapon* UWarriorHeroGameplayAbility::GetCurrentCarriedWeaponFromActorInfo()
+{
+	return GetHeroCombatComponentFromActorInfo()->GetHeroCarriedWeaponByTag(GetHeroCombatComponentFromActorInfo()->CurrentEquippedWeaponTag);
+}
+
+UWeaponCombatComponent* UWarriorHeroGameplayAbility::GetCurrentWeaponCombatComponent()
+{
+	return GetCurrentCarriedWeaponFromActorInfo()->GetWeaponCombatComponent();
 }
 
 UWarriorAbilitySystemComponent* UWarriorHeroGameplayAbility::GetWarriorAbilitySystemComponentFromActorInfo()

@@ -8,54 +8,37 @@ const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.Gamepla
 interface TS_GA_Hero_LightAttackMaster extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.LightAttack.GA_Hero_LightAttackMaster.GA_Hero_LightAttackMaster_C {}
 class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_LightAttackMaster {
     K2_ActivateAbility() : void {
-        // Clear And Invalidate Timer By Handle
-        UE.KismetSystemLibrary.K2_ClearAndInvalidateTimerHandle(this, $ref(this.ComboCountResetTimerHandle));
         // Play Montage And Wait
         this.TS_PlayMontageAndWait();
-        /* Sequence */
-        // Then 0
-        super.TS_Lib_PrintDebugStringToLog("Light Combo " + this.CurrentLightAttackComboCount.toString());
-        if (this.CurrentLightAttackComboCount === this.AttackMontagesMap.Num()) {
-            this.BP_ResetLightAttackComboCount();
-        } else if (this.CurrentLightAttackComboCount === this.AttackMontagesMap.Num() - 1) {
-            UE.WarriorFunctionLibrary.AddGameplayTagToActorIfNone(
-                this.GetHeroCharacterFromActorInfo(),
-                this.JumpToFinisherTag);
-            this.CurrentLightAttackComboCount++;
-        } else {
-            this.CurrentLightAttackComboCount++;
-        }
-    }
-
-    TS_ResetLightAttackComboCount() : void {
-        this.CurrentLightAttackComboCount = 1;
-        super.TS_Lib_PrintDebugStringToLog("Reset Light Attack Combo");
-        UE.WarriorFunctionLibrary.RemoveGameplayTagFromActorIfFound(
-            this.GetHeroCharacterFromActorInfo(),
-            this.JumpToFinisherTag);
-    }
-
-    BP_ResetLightAttackComboCount() : void {
-        this.TS_ResetLightAttackComboCount();
-        UE.KismetSystemLibrary.K2_ClearAndInvalidateTimerHandle(this, $ref(this.ComboCountResetTimerHandle));
     }
 
     TS_PlayMontageAndWait(): void {
+        // 由于该Ability触发前提是携带对应武器攻击，所以直接通过CurrentWeapon获取
+        const ComboTag : UE.GameplayTag = this.GetCurrentWeaponCombatComponent().ProcessCombo(this.AbilityComboParentTag);
         super.TS_Lib_PlayMontageAndWait_AllSameEvents(
-            $ref(this.AttackMontagesMap.Get(this.CurrentLightAttackComboCount) ?? null)/* 或者直接先对该map元素进行Nullish判断 */,
+            $ref(this.AttackMontagesMap.Get(ComboTag) ?? null)/* 或者直接先对该map元素进行Nullish判断 */,
+            (): void => {
+                this.K2_EndAbility();
+            }
+        );
+    }
+
+    /*TS_PlayMontageAndWait(): void {
+        super.TS_Lib_PlayMontageAndWait_AllSameEvents(
+            $ref(this.AttackMontagesMap.Get(this.CurrentLightAttackComboCount) ?? null)/!* 或者直接先对该map元素进行Nullish判断 *!/,
             (): void => {
                 this.K2_EndAbility();
                 // Set Timer By Event
                 // 注意toDelegate写法，但由于this不是Actor，会由于无法在世界中找到，导致delegate无法生效
-                /*this.ComboCountResetTimerHandle = UE.KismetSystemLibrary.K2_SetTimerDelegate(
+                /!*this.ComboCountResetTimerHandle = UE.KismetSystemLibrary.K2_SetTimerDelegate(
                     toDelegate(this, this.TS_ResetAttackComboCount),/!* 注意不是this.TS_ResetAttackComboCount() *!/
                     0.3,
-                    false);*/
+                    false);*!/
                 // 采用蓝图辅助，利用自定义事件BP_ResetComboCount来帮助传递Delegate
                 this.BP_SetTimerDelegate(2, false, this.ComboCountResetTimerHandle);
             }
         );
-    }
+    }*/
 }
 
 blueprint.mixin(jsClass, TS_GA_Hero_LightAttackMaster);

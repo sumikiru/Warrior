@@ -29,4 +29,12 @@ namespace WarriorGameplayTags
 
 	// Status Tags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_JumpToFinisher, "Player.Status.JumpToFinisher");
+
+	// Combo Tags
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_1, "Player.Combo.LightAttack.Axe.1");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_2, "Player.Combo.LightAttack.Axe.2");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_3, "Player.Combo.LightAttack.Axe.3");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_4, "Player.Combo.LightAttack.Axe.4");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_HeavyAttack_Axe_1, "Player.Combo.HeavyAttack.Axe.1");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_HeavyAttack_Axe_2, "Player.Combo.HeavyAttack.Axe.2");
 }

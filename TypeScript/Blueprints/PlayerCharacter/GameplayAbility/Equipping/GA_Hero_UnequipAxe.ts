@@ -48,6 +48,8 @@ class TS_GA_Hero_UnequipAxe extends TS_AbilityTaskFunctionLibrary implements TS_
         this.GetWarriorAbilitySystemComponentFromActorInfo().RemoveGrantedHeroWeaponAbilities(
             $ref($unref(InWeaponToUnequip).GetGrantedAbilitySpecHandles())
         );
+        // 4.Remove Weapon Combo System
+        $unref(InWeaponToUnequip).RemoveGrantedComboChains();
     }
 }
 

@@ -7,6 +7,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "WarriorFunctionLibrary.generated.h"
 
+class AWarriorHeroCharacter;
+class UWarriorHeroGameplayAbility;
 struct FGameplayTag;
 class UWarriorAbilitySystemComponent;
 
@@ -27,6 +29,7 @@ class WARRIOR_API UWarriorFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	static UWarriorAbilitySystemComponent* NativeGetWarriorASCFromActor(AActor* InActor);
 	static bool NativeDoesActorHaveTag(AActor* InActor, const FGameplayTag& TagToCheck);
+	static AWarriorHeroCharacter* NativeGetWarriorHeroCharacter(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "Warrior|FunctionLibrary")
 	static void AddGameplayTagToActorIfNone(AActor* InActor, const FGameplayTag& TagToAdd);

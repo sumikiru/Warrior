@@ -5,7 +5,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Binding.hpp"
 #include "UEDataBinding.hpp"
+#include "WarriorDebugHelper.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
+#include "Characters/WarriorHeroCharacter.h"
 
 /**
  * 详见https://puerts.github.io/docs/puerts/unreal/template_binding/
@@ -62,6 +65,17 @@ bool UWarriorFunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, const FGam
 	UWarriorAbilitySystemComponent* ASC = NativeGetWarriorASCFromActor(InActor);
 
 	return ASC->HasMatchingGameplayTag(TagToCheck);
+}
+
+AWarriorHeroCharacter* UWarriorFunctionLibrary::NativeGetWarriorHeroCharacter(const UObject* WorldContextObject)
+{
+	APlayerController* LocalPC = WorldContextObject->GetWorld()->GetFirstPlayerController();
+	// 获取本地玩家控制器
+	if (LocalPC && LocalPC->IsLocalController())
+	{
+		return CastChecked<AWarriorHeroCharacter>(LocalPC->GetCharacter());
+	}
+	return nullptr;
 }
 
 void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, const FGameplayTag& TagToCheck, EWarriorConfirmType& OutConfirmType)

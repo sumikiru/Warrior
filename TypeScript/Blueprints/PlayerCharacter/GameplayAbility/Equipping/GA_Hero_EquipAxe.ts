@@ -56,6 +56,8 @@ class TS_GA_Hero_EquipAxe extends TS_AbilityTaskFunctionLibrary implements TS_GA
             this.GetAbilityLevel(),
             $ref(GrantedSpecHandles));
         $unref(InWeaponToEquip).AssignGrantedAbilitySpecHandles(GrantedSpecHandles);
+        // 4.Grant Weapon Combo System
+        $unref(InWeaponToEquip).AssignGrantedComboChains();
     }
 }
 
