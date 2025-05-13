@@ -30,6 +30,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "StartUpData")
 	TArray<TSubclassOf<UWarriorGameplayAbility>> ReactiveAbilities;	//反应能力，如HitReact/Death
 
+	// 缺少设置AbilitySpec.DynamicAbilityTags的部分，且InAbilitiesToGive中元素为UWarriorGameplayAbility固定
 	void GrantAbilities(const TArray<TSubclassOf<UWarriorGameplayAbility>>& InAbilitiesToGive,
 	                    UWarriorAbilitySystemComponent* InASCToGive, int32 ApplyLevel = 1);
 };

@@ -7,7 +7,7 @@ import "./Blueprints/PlayerCharacter/GameplayAbility/LightAttack/GA_Hero_LightAt
 import "./Blueprints/PlayerCharacter/GameplayAbility/HeavyAttack/GA_Hero_HeavyAttackMaster"
 import "./Blueprints/PlayerCharacter/GameplayAbility/HeavyAttack/GA_Hero_HeavyAttack_Axe"
 
-import "./Blueprints/Shared/GameplayAbility/GA_Shared_SpawnWeapon"
+import "./Blueprints/Shared/GameplayAbility/GA_Shared_SpawnWeapon_Base"
 
 import "./Blueprints/Shared/AnimNotify/AN_SendGameplayEventToOwner"
 

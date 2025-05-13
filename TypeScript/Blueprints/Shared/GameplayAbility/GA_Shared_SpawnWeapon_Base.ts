@@ -1,11 +1,11 @@
 import * as UE from 'ue';
 import {argv, blueprint} from "puerts";
 
-const uclass = UE.Class.Load("/Game/Blueprints/Shared/GameplayAbility/GA_Shared_SpawnWeapon.GA_Shared_SpawnWeapon_C");   // 注意_C后缀
-const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.Shared.GameplayAbility.GA_Shared_SpawnWeapon.GA_Shared_SpawnWeapon_C>(uclass);
+const uclass = UE.Class.Load("/Game/Blueprints/Shared/GameplayAbility/GA_Shared_SpawnWeapon_Base.GA_Shared_SpawnWeapon_Base_C");   // 注意_C后缀
+const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.Shared.GameplayAbility.GA_Shared_SpawnWeapon_Base.GA_Shared_SpawnWeapon_Base_C>(uclass);
 
-interface TS_GA_Shared_SpawnWeapon extends UE.Game.Blueprints.Shared.GameplayAbility.GA_Shared_SpawnWeapon.GA_Shared_SpawnWeapon_C {}
-class TS_GA_Shared_SpawnWeapon implements TS_GA_Shared_SpawnWeapon {
+interface TS_GA_Shared_SpawnWeapon_Base extends UE.Game.Blueprints.Shared.GameplayAbility.GA_Shared_SpawnWeapon_Base.GA_Shared_SpawnWeapon_Base_C {}
+class TS_GA_Shared_SpawnWeapon_Base implements TS_GA_Shared_SpawnWeapon_Base {
     // 事件激活能力(Event ActivateAbility)
     K2_ActivateAbility() {
         // 这里不需要super.K2_ActivateAbility();
@@ -42,7 +42,7 @@ class TS_GA_Shared_SpawnWeapon implements TS_GA_Shared_SpawnWeapon {
 
 }
 
-blueprint.mixin(jsClass, TS_GA_Shared_SpawnWeapon);
+blueprint.mixin(jsClass, TS_GA_Shared_SpawnWeapon_Base);
 
 /**
  * 关于BeginDeferredActorSpawnFromClass：

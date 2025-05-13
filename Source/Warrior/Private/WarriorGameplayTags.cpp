@@ -37,4 +37,8 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_4, "Player.Combo.LightAttack.Axe.4");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_HeavyAttack_Axe_1, "Player.Combo.HeavyAttack.Axe.1");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_HeavyAttack_Axe_2, "Player.Combo.HeavyAttack.Axe.2");
+
+	/** Enemy Tags */
+	// Weapon Tags
+	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon, "Enemy.Weapon");
 }

@@ -5,9 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Binding.hpp"
 #include "UEDataBinding.hpp"
-#include "WarriorDebugHelper.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 #include "Characters/WarriorHeroCharacter.h"
 
 /**

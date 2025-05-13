@@ -38,4 +38,8 @@ namespace WarriorGameplayTags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_LightAttack_Axe_4);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_HeavyAttack_Axe_1);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_HeavyAttack_Axe_2);
+
+	/** Enemy Tags */
+	// Weapon Tags
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon);
 }
