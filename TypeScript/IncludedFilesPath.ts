@@ -12,3 +12,4 @@ import "./Blueprints/Shared/GameplayAbility/GA_Shared_SpawnWeapon_Base"
 import "./Blueprints/Shared/AnimNotify/AN_SendGameplayEventToOwner"
 
 import "./Blueprints/Shared/AnimNotifyState/ANS_SlowMotion"
+import "./Blueprints/Shared/AnimNotifyState/ANS_ToggleWeaponCollision"
