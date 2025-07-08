@@ -3,7 +3,8 @@
 
 #include "Components/Combat/HeroCombatComponent.h"
 
-#include "WarriorDebugHelper.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "WarriorGameplayTags.h"
 #include "Items/Weapons/WarriorHeroWeapon.h"
 
 AWarriorHeroWeapon* UHeroCombatComponent::GetHeroCarriedWeaponByTag(FGameplayTag InWeaponTag) const
@@ -13,10 +14,31 @@ AWarriorHeroWeapon* UHeroCombatComponent::GetHeroCarriedWeaponByTag(FGameplayTag
 
 void UHeroCombatComponent::OnHitTargetActor(AActor* HitActor)
 {
-	Debug::Print(TEXT("Hero Combat Component: OnHitTargetActor()"), FColor::Green);
+	// 确保每次攻击只能命中一次（处理一次）
+	if (OverlappedActors.Contains(HitActor))
+	{
+		return;
+	}
+
+	OverlappedActors.AddUnique(HitActor);
+
+	/**
+	 * 处理伤害，发送Gameplay Event给Hero
+	 * SendGameplayEventToActor会发送标记GameplayEventTag的EventData到目标Actor
+	 * 然后调用WaitGameplayEvent等待接收标记了GameplayEventTag的Payload Data
+	 * 详见GA_Hero_LightAttack_Master.ts
+	 */
+	FGameplayEventData Data;
+	Data.Instigator = GetOwningPawn();
+	Data.Target = HitActor;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		GetOwningPawn(),
+		WarriorGameplayTags::Shared_Event_MeleeHit,
+		Data
+	);
 }
 
 void UHeroCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor)
 {
-	Debug::Print(TEXT("Hero Combat Component: OnWeaponPulledFromTargetActor()"), FColor::Red);
 }

@@ -10,6 +10,18 @@ class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary impleme
     K2_ActivateAbility() : void {
         // Play Montage And Wait
         this.TS_PlayMontageAndWait();
+        super.TS_Lib_WaitGameplayEvent(
+            /**
+             * 参考WarriorGameplayTags.cpp
+             * 这样写是给出一种hardcode方案，除了在蓝图中定义一个GameplayTag变量外，还可以直接调用cpp的方法
+             * @note 第一个参数为GameplayTag(注意不是下划线，可参照蓝图)，第二个参数为bool ErrorIfNotFound
+             */
+            $ref(UE.GameplayTag.CPP_RequestGameplayTag("Shared.Event.MeleeHit", true)),
+            // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
+            (Payload : UE.GameplayEventData): void => {
+                super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
+            }
+        );
     }
 
     TS_PlayMontageAndWait(): void {

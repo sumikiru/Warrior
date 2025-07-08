@@ -3,6 +3,9 @@
 
 #include "WarriorGameplayTags.h"
 
+#include "Binding.hpp"
+#include "UEDataBinding.hpp"
+
 namespace WarriorGameplayTags
 {
 	/** Input Tags */
@@ -41,4 +44,24 @@ namespace WarriorGameplayTags
 	/** Enemy Tags */
 	// Weapon Tags
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon, "Enemy.Weapon");
+
+	/** Shared Tags */
+	// Event Tags
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_MeleeHit, "Shared.Event.MeleeHit");
 }
+
+
+UsingUStruct(FGameplayTag);
+
+// 参考WarriorFunctionLibrary.cpp
+struct FAutoRegisterForCppGameplayTags
+{
+	FAutoRegisterForCppGameplayTags()
+	{
+		puerts::DefineClass<FGameplayTag>()
+			.Function("CPP_RequestGameplayTag", MakeFunction(&FGameplayTag::RequestGameplayTag))
+			.Register();
+	}
+};
+
+FAutoRegisterForCppGameplayTags _FAutoRegisterForCppGameplayTags__;

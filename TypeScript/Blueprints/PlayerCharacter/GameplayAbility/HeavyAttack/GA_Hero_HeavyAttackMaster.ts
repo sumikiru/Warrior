@@ -10,6 +10,13 @@ interface TS_GA_Hero_HeavyAttackMaster extends UE.Game.Blueprints.PlayerCharacte
 class TS_GA_Hero_HeavyAttackMaster extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_HeavyAttackMaster {
     K2_ActivateAbility() : void {
         this.TS_PlayMontageAndWait();
+        super.TS_Lib_WaitGameplayEvent(
+            $ref(UE.GameplayTag.CPP_RequestGameplayTag("Shared.Event.MeleeHit", true)),
+            // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
+            (Payload : UE.GameplayEventData): void => {
+                super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
+            }
+        );
     }
 
     TS_PlayMontageAndWait() : void {
