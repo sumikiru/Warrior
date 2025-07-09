@@ -2,6 +2,7 @@
 
 #pragma once
 #include "GameplayTagContainer.h"
+#include "ScalableFloat.h"
 
 #include "WarriorStructTypes.generated.h"
 
@@ -42,4 +43,11 @@ struct FWarriorHeroWeaponData
 	TObjectPtr<UInputMappingContext> WeaponInputMappingContext;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FWarriorHeroAbilitySet> DefaultWeaponAbilities;
+	/**
+	 * 直接用Scalable Float而不是先给在每个武器(单独装备的武器/子弹等等)使用单独的AttributeSet/ASC，
+	 * 详见https://sumikiru.github.io/posts/d0ae354a.html#4-4-2-3-Item-Attribute-%E6%AD%A6%E5%99%A8%E5%BC%B9%E8%8D%AF
+	 * 同时借助Scalable Float，可以在蓝图中借助Curve Table实现灵活配置
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat WeaponBaseDamage;
 };

@@ -73,6 +73,8 @@ FGameplayTag UWeaponCombatComponent::ProcessCombo(FGameplayTag InAbilityComboPar
 		// 已到达分支的最后一个动作，重置计数
 		if (ComboChain.ComboSequence.Num() == CurrentComboCount)
 		{
+			// todo:应该先播放完动作，再重置Combo，否则会出现Combo 4时先显示Reset Combo,然后Combo为0的情况
+			// 考虑先AnimNotify中加入ResetCombo功能
 			ResetCombo();
 			return ComboChain.ComboSequence[ComboChain.ComboSequence.Num() - 1];
 		}

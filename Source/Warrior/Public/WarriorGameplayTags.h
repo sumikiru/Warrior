@@ -39,6 +39,10 @@ namespace WarriorGameplayTags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_HeavyAttack_Axe_1);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_HeavyAttack_Axe_2);
 
+	// Set By Caller
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_SetByCaller_AttackType_Light);
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_SetByCaller_AttackType_Heavy);
+
 	/** Enemy Tags */
 	// Weapon Tags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy_Weapon);
@@ -46,4 +50,7 @@ namespace WarriorGameplayTags
 	/** Shared Tags */
 	// Event Tags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_MeleeHit);
+
+	// Set By Caller
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_BaseDamage);
 }

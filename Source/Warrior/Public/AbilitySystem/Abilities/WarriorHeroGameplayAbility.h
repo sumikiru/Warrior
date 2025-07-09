@@ -21,22 +21,27 @@ class WARRIOR_API UWarriorHeroGameplayAbility : public UWarriorGameplayAbility
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	AWarriorHeroCharacter* GetHeroCharacterFromActorInfo();
-	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	AWarriorHeroController* GetHeroControllerFromActorInfo();
-	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UHeroCombatComponent* GetHeroCombatComponentFromActorInfo();
-	UFUNCTION(BlueprintPure, Category = "WarriorAbility|Weapon")
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability|Weapon")
 	AWarriorHeroWeapon* GetCurrentCarriedWeaponFromActorInfo();
 	// 获取当前武器的战斗组件
-	UFUNCTION(BlueprintPure, Category = "WarriorAbility|Weapon")
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability|Weapon")
 	UWeaponCombatComponent* GetCurrentWeaponCombatComponent();
-	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	UWarriorAbilitySystemComponent* GetWarriorAbilitySystemComponentFromActorInfo();
+	/** Apply Damage */
+	// Make Gameplay Effect Spec Handle
+	UFUNCTION(BlueprintPure, Category = "WarriorAbility")
+	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(const TSubclassOf<UGameplayEffect>& EffectClass, float InWeaponBaseDamage,
+	                                                         FGameplayTag InCurrentAttackTypeTag, int32 InCurrentComboCount);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WarriorAbility", meta = (Categories = "Player.Combo"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Warrior|Ability", meta = (Categories = "Player.Combo"))
 	FGameplayTag AbilityComboParentTag;
 
 private:

@@ -20,6 +20,7 @@ class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary impleme
             // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
             (Payload : UE.GameplayEventData): void => {
                 super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
+                super.TS_Lib_PrintDebugString(this.GetCurrentWeaponCombatComponent().GetCurrentComboCount().toString());
             }
         );
     }

@@ -41,6 +41,10 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_HeavyAttack_Axe_1, "Player.Combo.HeavyAttack.Axe.1");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_HeavyAttack_Axe_2, "Player.Combo.HeavyAttack.Axe.2");
 
+	// Set By Caller
+	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Light, "Player.SetByCaller.AttackType.Light");
+	UE_DEFINE_GAMEPLAY_TAG(Player_SetByCaller_AttackType_Heavy, "Player.SetByCaller.AttackType.Heavy");
+
 	/** Enemy Tags */
 	// Weapon Tags
 	UE_DEFINE_GAMEPLAY_TAG(Enemy_Weapon, "Enemy.Weapon");
@@ -48,6 +52,9 @@ namespace WarriorGameplayTags
 	/** Shared Tags */
 	// Event Tags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_MeleeHit, "Shared.Event.MeleeHit");
+
+	// Set By Caller
+	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_BaseDamage, "Shared.SetByCaller.BaseDamage");
 }
 
 
