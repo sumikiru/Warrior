@@ -1,5 +1,5 @@
 import * as UE from "ue";
-import {$InRef, $Nullable, $unref} from "puerts";
+import {$InRef, $Nullable, $ref, $unref} from "puerts";
 
 export abstract class TS_AbilityTaskFunctionLibrary extends UE.GameplayAbility {
     // Play Montage And Wait, 但是Completed/BlendOut/Interrupted/Cancelled以后立即执行K2_EndAbility()
@@ -55,6 +55,17 @@ export abstract class TS_AbilityTaskFunctionLibrary extends UE.GameplayAbility {
         // 所有AbilityTask的子类在绑定Delegate后都需要手动准备好激活
         WaitGameplayEventTask.ReadyForActivation();
     }
+
+    /**
+    这种写法会报错：其他地方调用super.TS_Lib_WaitForResetComboTimer()时，会报错找不到该函数
+    TS_Lib_WaitForResetComboTimer() : void {
+        this.TS_Lib_WaitGameplayEvent(
+            $ref(UE.GameplayTag.CPP_RequestGameplayTag("Player.Combo.ResetComboTimer", true)),
+            (Payload : UE.GameplayEventData): void => {
+                this.TS_Lib_PrintDebugString("Reset Combo Timer: " + Payload.EventTag.TagName);
+            }
+        );
+    }*/
 
     TS_Lib_PrintDebugString(DebugString: string) : void {
         UE.KismetSystemLibrary.PrintString(this, DebugString, true, true, UE.LinearColor.Blue, 200.0);

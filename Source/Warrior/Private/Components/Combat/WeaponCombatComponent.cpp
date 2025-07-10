@@ -4,6 +4,7 @@
 #include "Components/Combat/WeaponCombatComponent.h"
 
 #include "WarriorGameplayTags.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "DataAssets/ComboChain/DataAsset_ComboChainBase.h"
 
 void UWeaponCombatComponent::AssignGrantedComboChains(const TMap<int32, FComboChainRule>& InComboChainRulesMap)
@@ -25,8 +26,10 @@ void UWeaponCombatComponent::ResetCombo()
 {
 	SetActiveComboChainIndexes(GrantedComboChains.Num());
 	CurrentComboCount = 0;
+	// 清除计时而不是重置计时，连招动作结束时才重置计时
 	GetWorld()->GetTimerManager().ClearTimer(ResetTimer);
 	UE_LOG(LogTemp, Warning, TEXT("ResetCombo"));
+	bComboChainsFinished = false;
 }
 
 void UWeaponCombatComponent::ResetComboTimer()
@@ -37,6 +40,7 @@ void UWeaponCombatComponent::ResetComboTimer()
 		this,
 		&ThisClass::ResetCombo,
 		ResetComboTime);
+	UE_LOG(LogTemp, Display, TEXT("ResetCombo Timer"));
 }
 
 int32 UWeaponCombatComponent::GetCurrentComboCount() const
@@ -60,6 +64,12 @@ FGameplayTag UWeaponCombatComponent::ProcessCombo(FGameplayTag InAbilityComboPar
 		return FGameplayTag();
 	}
 
+	// 之前的分支结束，先重置Combo计数
+	if (bComboChainsFinished)
+	{
+		ResetCombo();
+	}
+
 	// 每次都需要提前排除掉所有不符合的ActiveComboChainIndex，避免出现"重1轻4"、"轻1重2"等异常情况
 	RemoveMismatchedComboChains(InAbilityComboParentTag);
 	
@@ -73,12 +83,14 @@ FGameplayTag UWeaponCombatComponent::ProcessCombo(FGameplayTag InAbilityComboPar
 		// 已到达分支的最后一个动作，重置计数
 		if (ComboChain.ComboSequence.Num() == CurrentComboCount)
 		{
-			// todo:应该先播放完动作，再重置Combo，否则会出现Combo 4时先显示Reset Combo,然后Combo为0的情况
-			// 考虑先AnimNotify中加入ResetCombo功能
-			ResetCombo();
+			// 应该先播放完动作，再重置Combo，否则会出现Combo 4时先显示Reset Combo,然后Combo为0的情况
+			// 现在不再ResetCombo();而是标记当前ComboChains已经结束，下次ProcessCombo时会根据bComboFinished重置CurrentComboCount
+			bComboChainsFinished = true;
 			return ComboChain.ComboSequence[ComboChain.ComboSequence.Num() - 1];
 		}
-		ResetComboTimer();
+		
+		// 不直接ResetComboTimer();而是等到人物（Hero/Enemy均可）Combo动作结束后再重置计时器
+		// 详见GA_Hero_HeavyAttackMaster.ts
 		return ComboChain.ComboSequence[CurrentComboCount - 1];
 	}
 

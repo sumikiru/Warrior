@@ -32,6 +32,7 @@ namespace WarriorGameplayTags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Status_JumpToFinisher);
 
 	// Combo Tags
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_ResetComboTimer);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_LightAttack_Axe_1);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_LightAttack_Axe_2);
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Player_Combo_LightAttack_Axe_3);

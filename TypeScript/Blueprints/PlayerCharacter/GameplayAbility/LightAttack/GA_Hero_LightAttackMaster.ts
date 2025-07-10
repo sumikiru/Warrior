@@ -8,8 +8,55 @@ const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.Gamepla
 interface TS_GA_Hero_LightAttackMaster extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.LightAttack.GA_Hero_LightAttackMaster.GA_Hero_LightAttackMaster_C {}
 class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_LightAttackMaster {
     K2_ActivateAbility() : void {
-        // Play Montage And Wait
+        // 动作开始时先重置一次
+        this.GetCurrentWeaponCombatComponent().ResetComboTimer();
+        this.TS_WaitForResetComboTimer();
+        // 等待命中事件
+        this.TS_WaitForMeleeHitEvent();
         this.TS_PlayMontageAndWait();
+    }
+
+    TS_PlayMontageAndWait(): void {
+        // 由于该Ability触发前提是携带对应武器攻击，所以直接通过CurrentWeapon获取
+        const ComboTag : UE.GameplayTag = this.GetCurrentWeaponCombatComponent().ProcessCombo(this.AbilityComboParentTag);
+        // @note: 在ProcessCombo之后CurrentComboComboCount才是正常计数
+        super.TS_Lib_PrintDebugString(this.GetCurrentWeaponCombatComponent().GetCurrentComboCount().toString());
+        super.TS_Lib_PlayMontageAndWait_AllSameEvents(
+            $ref(this.AttackMontagesMap.Get(ComboTag) ?? null)/* 或者直接先对该map元素进行Nullish判断 */,
+            (): void => {
+                this.TS_NotifyResetComboTimer();
+                this.K2_EndAbility();
+            }
+        );
+    }
+
+    /** 每次蒙太奇动画开始前准备 */
+    TS_WaitForResetComboTimer() : void {
+        super.TS_Lib_PrintDebugString("Get Ready To Reset Combo Timer!!");
+        super.TS_Lib_WaitGameplayEvent(
+            $ref(UE.GameplayTag.CPP_RequestGameplayTag("Player.Combo.ResetComboTimer", true)),
+            // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
+            (Payload : UE.GameplayEventData): void => {
+                this.GetCurrentWeaponCombatComponent().ResetComboTimer();
+            }
+        );
+    }
+
+    /** 每次蒙太奇动画结束时触发 */
+    TS_NotifyResetComboTimer() : void {
+        let Data : UE.GameplayEventData = new UE.GameplayEventData();
+        Data.Instigator = this.GetOwningActorFromActorInfo();
+        Data.Target = this.GetOwningActorFromActorInfo();
+
+        UE.AbilitySystemBlueprintLibrary.SendGameplayEventToActor(
+            this.GetOwningActorFromActorInfo(), // 该Actor必须具有ASC
+            UE.GameplayTag.CPP_RequestGameplayTag("Player.Combo.ResetComboTimer", true),
+            Data
+        );
+        super.TS_Lib_PrintDebugString("Reset!!");
+    }
+
+    TS_WaitForMeleeHitEvent() : void {
         super.TS_Lib_WaitGameplayEvent(
             /**
              * 参考WarriorGameplayTags.cpp
@@ -20,18 +67,6 @@ class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary impleme
             // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
             (Payload : UE.GameplayEventData): void => {
                 super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
-                super.TS_Lib_PrintDebugString(this.GetCurrentWeaponCombatComponent().GetCurrentComboCount().toString());
-            }
-        );
-    }
-
-    TS_PlayMontageAndWait(): void {
-        // 由于该Ability触发前提是携带对应武器攻击，所以直接通过CurrentWeapon获取
-        const ComboTag : UE.GameplayTag = this.GetCurrentWeaponCombatComponent().ProcessCombo(this.AbilityComboParentTag);
-        super.TS_Lib_PlayMontageAndWait_AllSameEvents(
-            $ref(this.AttackMontagesMap.Get(ComboTag) ?? null)/* 或者直接先对该map元素进行Nullish判断 */,
-            (): void => {
-                this.K2_EndAbility();
             }
         );
     }

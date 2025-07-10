@@ -34,6 +34,7 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Status_JumpToFinisher, "Player.Status.JumpToFinisher");
 
 	// Combo Tags
+	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_ResetComboTimer, "Player.Combo.ResetComboTimer");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_1, "Player.Combo.LightAttack.Axe.1");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_2, "Player.Combo.LightAttack.Axe.2");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Combo_LightAttack_Axe_3, "Player.Combo.LightAttack.Axe.3");
@@ -57,18 +58,3 @@ namespace WarriorGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_BaseDamage, "Shared.SetByCaller.BaseDamage");
 }
 
-
-UsingUStruct(FGameplayTag);
-
-// 参考WarriorFunctionLibrary.cpp
-struct FAutoRegisterForCppGameplayTags
-{
-	FAutoRegisterForCppGameplayTags()
-	{
-		puerts::DefineClass<FGameplayTag>()
-			.Function("CPP_RequestGameplayTag", MakeFunction(&FGameplayTag::RequestGameplayTag))
-			.Register();
-	}
-};
-
-FAutoRegisterForCppGameplayTags _FAutoRegisterForCppGameplayTags__;

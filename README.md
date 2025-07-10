@@ -15,5 +15,9 @@
       * Toggle Weapon Collision
       * Hit Check
       * Process Hit && Notify Result
-    * Custom Calculation
+    * Apply Damage: Custom Calculation
+      * Make Gameplay Effect Spec Handle
+      * Apply Handle To Target
+      * Gameplay Effect Execution Calculation
+      * Clamp Values in AttributeSet
     * UI

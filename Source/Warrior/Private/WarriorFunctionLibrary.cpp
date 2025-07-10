@@ -31,6 +31,13 @@ struct FAutoRegisterForCppWarriorFunctionLibrary
 			.Function("CPP_DoesActorHaveTag",MakeFunction(&UWarriorFunctionLibrary::NativeDoesActorHaveTag))
 			.Function("CPP_GetPawnCombatComponentFromActor", MakeFunction(&UWarriorFunctionLibrary::NativeGetPawnCombatComponentFromActor))
 			.Register();
+		/**
+		 * 将WarriorGameplayTags.cpp中的静态函数注册移动到FunctionLibrary统一管理
+		 * 因为同一个类不能被多次绑定和声明，如UsingUStruct(FGameplayTag); puerts会报错重复定义
+		 */
+		puerts::DefineClass<FGameplayTag>()
+			.Function("CPP_RequestGameplayTag", MakeFunction(&FGameplayTag::RequestGameplayTag))
+			.Register();
 	}
 };
 FAutoRegisterForCppWarriorFunctionLibrary _FAutoRegisterForCppWarriorFunctionLibrary__;

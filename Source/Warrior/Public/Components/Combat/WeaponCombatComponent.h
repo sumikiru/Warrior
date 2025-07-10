@@ -39,9 +39,10 @@ private:
 	void RemoveMismatchedComboChains(const FGameplayTag& InAbilityComboParentTag);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Warrior|Combat|Combo System", meta = (AllowPrivateAccess = "true"))
-	float ResetComboTime = 5.f;
+	float ResetComboTime = 3.f;
 	int32 CurrentComboCount = 0;
 	FTimerHandle ResetTimer;
 	TArray<FComboChainRule> GrantedComboChains;
 	TArray<int32> ActiveComboChainIndexes;
+	bool bComboChainsFinished = false;
 };
