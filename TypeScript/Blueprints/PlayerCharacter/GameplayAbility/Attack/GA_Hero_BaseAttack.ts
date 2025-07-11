@@ -2,11 +2,12 @@ import * as UE from 'ue';
 import {$ref, blueprint} from "puerts";
 import {TS_AbilityTaskFunctionLibrary} from "../../../../Interfaces/GameplayAbility/AbilityTaskFunctionLibrary";
 
-const uclass = UE.Class.Load("/Game/Blueprints/PlayerCharacter/GameplayAbility/LightAttack/GA_Hero_LightAttackMaster.GA_Hero_LightAttackMaster_C");
-const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.GameplayAbility.LightAttack.GA_Hero_LightAttackMaster.GA_Hero_LightAttackMaster_C>(uclass);
+// 前提是设置为“每个Actor实例化”
+const uclass = UE.Class.Load("/Game/Blueprints/PlayerCharacter/GameplayAbility/Attack/GA_Hero_BaseAttack.GA_Hero_BaseAttack_C");
+const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Attack.GA_Hero_BaseAttack.GA_Hero_BaseAttack_C>(uclass);
 
-interface TS_GA_Hero_LightAttackMaster extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.LightAttack.GA_Hero_LightAttackMaster.GA_Hero_LightAttackMaster_C {}
-class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_LightAttackMaster {
+interface TS_GA_Hero_BaseAttack extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Attack.GA_Hero_BaseAttack.GA_Hero_BaseAttack_C {}
+class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_BaseAttack {
     K2_ActivateAbility() : void {
         // 动作开始时先重置一次
         this.GetCurrentWeaponCombatComponent().ResetComboTimer();
@@ -14,6 +15,11 @@ class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary impleme
         // 等待命中事件
         this.TS_WaitForMeleeHitEvent();
         this.TS_PlayMontageAndWait();
+    }
+
+    /** 用来覆盖蓝图节点 */
+    K2_OnEndAbility(bWasCancelled: boolean) {
+
     }
 
     TS_PlayMontageAndWait(): void {
@@ -65,9 +71,37 @@ class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary impleme
              */
             $ref(UE.GameplayTag.CPP_RequestGameplayTag("Shared.Event.MeleeHit", true)),
             // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
-            (Payload : UE.GameplayEventData): void => {
-                super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
+            /**
+             * @note 这里使用匿名函数内部调用this.TS_ApplyDamage()，而不是直接传入this.TS_ApplyDamage
+             * 如果是后者，Log会记录报错：无法找到对应函数，这是因为子类没有重写TS_ApplyDamage()，
+             * 子类只能调用super.TS_ApplyDamage()而无法调用this.TS_ApplyDamage()
+             */
+            (Payload : UE.GameplayEventData) : void => {
+                this.TS_ApplyDamage(Payload);
             }
+        );
+    }
+
+    TS_ApplyDamage(Payload : UE.GameplayEventData) : void {
+        super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
+        // MakeGameplayEffectSpecHandle
+        const WeaponBaseDamage = this.GetHeroCombatComponentFromActorInfo()
+            .GetHeroCurrentEquippedWeaponDamageAtLevel(
+                this.GetAbilityLevel()
+            );
+        const CurrentComboCount = this.GetCurrentWeaponCombatComponent().GetCurrentComboCount();
+
+        let DamageGameplayEffectSpecHandle : UE.GameplayEffectSpecHandle = this.MakeHeroDamageEffectSpecHandle(
+            this.DamageEffectClass,
+            WeaponBaseDamage,
+            this.CurrentAttackTypeTag,
+            CurrentComboCount
+        );
+
+        // ApplyGameplayEffectSpecHandleToTarget
+        UE.WarriorGameplayAbility.CPP_ApplyGameplayEffectSpecHandleToTarget(
+            Payload.Target,
+            DamageGameplayEffectSpecHandle
         );
     }
 
@@ -89,7 +123,7 @@ class TS_GA_Hero_LightAttackMaster extends TS_AbilityTaskFunctionLibrary impleme
     }*/
 }
 
-blueprint.mixin(jsClass, TS_GA_Hero_LightAttackMaster);
+blueprint.mixin(jsClass, TS_GA_Hero_BaseAttack);
 
 /**
  * 关于Delegate

@@ -3,8 +3,11 @@
 
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Components/Combat/PawnCombatComponent.h"
+#include "WarriorTypes/WarriorEnumTypes.h"
 
 void UWarriorGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
@@ -20,7 +23,7 @@ void UWarriorGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* Act
 }
 
 void UWarriorGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+                                         const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
@@ -36,4 +39,32 @@ void UWarriorGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 UPawnCombatComponent* UWarriorGameplayAbility::GetPawnCombatComponentFromActorInfo() const
 {
 	return GetAvatarActorFromActorInfo()->FindComponentByClass<UPawnCombatComponent>();
+}
+
+UWarriorAbilitySystemComponent* UWarriorGameplayAbility::GetWarriorAbilitySystemComponentFromActorInfo() const
+{
+	// 直接借助ActorInfo获取，其他同理如GetAvatarActorFromActorInfo()
+	return Cast<UWarriorAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
+}
+
+FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyGameplayEffectSpecHandleToTarget(AActor* TargetActor,
+                                                                                                 const FGameplayEffectSpecHandle& InSpecHandle) const
+{
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	checkf(TargetASC && InSpecHandle.IsValid(), TEXT("Invalid TargetActor or InSpecHandle!"));
+
+	return GetWarriorAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
+		*InSpecHandle.Data.Get(),
+		TargetASC
+	);
+}
+
+FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyGameplayEffectSpecHandleToTarget(AActor* TargetActor,
+                                                                                              const FGameplayEffectSpecHandle& InSpecHandle,
+                                                                                              EWarriorSuccessType& OutSuccessType) const
+{
+	const FActiveGameplayEffectHandle ActiveGEHandle = NativeApplyGameplayEffectSpecHandleToTarget(TargetActor, InSpecHandle);
+	OutSuccessType = ActiveGEHandle.WasSuccessfullyApplied() ? EWarriorSuccessType::Successful : EWarriorSuccessType::Failed;
+
+	return ActiveGEHandle;
 }

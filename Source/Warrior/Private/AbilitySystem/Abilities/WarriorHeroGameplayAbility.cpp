@@ -45,14 +45,10 @@ UWeaponCombatComponent* UWarriorHeroGameplayAbility::GetCurrentWeaponCombatCompo
 	return GetCurrentCarriedWeaponFromActorInfo()->GetWeaponCombatComponent();
 }
 
-UWarriorAbilitySystemComponent* UWarriorHeroGameplayAbility::GetWarriorAbilitySystemComponentFromActorInfo()
-{
-	return GetHeroCharacterFromActorInfo()->GetWarriorAbilitySystemComponent();
-}
-
 FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecHandle(const TSubclassOf<UGameplayEffect>& EffectClass,
-                                                                                      float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag,
-                                                                                      int32 InCurrentComboCount)
+                                                                                      const float InWeaponBaseDamage,
+                                                                                      const FGameplayTag& InCurrentAttackTypeTag,
+                                                                                      const int32 InCurrentComboCount) const
 {
 	checkf(EffectClass, TEXT("MakeHeroDamageEffectSpecHandle: Invalid EffectClass"));
 
@@ -81,6 +77,6 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 			InCurrentComboCount
 		);
 	}
-	
+
 	return EffectSpecHandle;
 }

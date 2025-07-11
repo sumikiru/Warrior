@@ -6,6 +6,7 @@
 #include "Binding.hpp"
 #include "UEDataBinding.hpp"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "Components/Combat/PawnCombatComponent.h"
 #include "Characters/WarriorHeroCharacter.h"
 
@@ -17,11 +18,15 @@
  * 在cpp文件中实现这一部分，创建结构体及其变量是为了调用构造函数里面的puerts::DefineClass<YouClass>().Function/Method/Property().Register();
  * @note 如果存在报错：Error C2027 : 使用了未定义类型“puerts::converter::Converter<UPawnCombatComponent *,void>”
  * 说明函数的参数或者返回值的类型是未声明的，需要UsingUClass/UsingUStruct等等，注意缺少头文件也会报错
+ * @note 方法必须为public属性，否则提示找不到对应方法
  */
 UsingUClass(UWarriorFunctionLibrary);
 UsingUClass(AActor);
 UsingUStruct(FGameplayTag);
 UsingUClass(UPawnCombatComponent);	// for return type
+UsingUClass(UWarriorGameplayAbility);
+UsingUStruct(FGameplayEffectSpecHandle);
+UsingUStruct(FActiveGameplayEffectHandle);
 
 struct FAutoRegisterForCppWarriorFunctionLibrary
 {
@@ -37,6 +42,9 @@ struct FAutoRegisterForCppWarriorFunctionLibrary
 		 */
 		puerts::DefineClass<FGameplayTag>()
 			.Function("CPP_RequestGameplayTag", MakeFunction(&FGameplayTag::RequestGameplayTag))
+			.Register();
+		puerts::DefineClass<UWarriorGameplayAbility>()
+			.Function("CPP_ApplyGameplayEffectSpecHandleToTarget", MakeFunction(&UWarriorGameplayAbility::NativeApplyGameplayEffectSpecHandleToTarget))
 			.Register();
 	}
 };
