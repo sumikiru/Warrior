@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/GEExecCalc/GEExecCalc_Damage.h"
 
+#include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAttributeSet.h"
 
 /** 第二种方法：直接使用宏 */
@@ -53,4 +54,61 @@ UGEExecCalc_Damage::UGEExecCalc_Damage()
 
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().AttackPowerDef);
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().DefensePowerDef);
+}
+
+void UGEExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+{
+	const FGameplayEffectSpec& EffectSpec = ExecutionParams.GetOwningSpec();
+
+	// 参考MakeGameplayEffectSpecHandle（UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecHandle）中添加了哪些
+	/*EffectSpec.GetContext().GetSourceObject();
+	EffectSpec.GetContext().GetAbility();
+	EffectSpec.GetContext().GetInstigator();
+	EffectSpec.GetContext().GetEffectCauser();*/
+
+	// 配置EvaluateParameters，用于后续AttemptCalculateCapturedAttributeMagnitude
+	FAggregatorEvaluateParameters EvaluateParameters;
+	EvaluateParameters.SourceTags = EffectSpec.CapturedSourceTags.GetAggregatedTags();
+	EvaluateParameters.TargetTags = EffectSpec.CapturedTargetTags.GetAggregatedTags();
+
+	// 自身的攻击力
+	float SourceAttackPower = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
+		GetWarriorDamageCapture().AttackPowerDef,
+		EvaluateParameters,
+		SourceAttackPower
+	);
+
+	/**
+	 * 在GameplayEffectSpec中检索伤害相关数据(Retrieve Hero Damage Info)
+	 * 详见UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecHandle，这是检索的前提
+	 * 通过EffectSpecHandle.Data->SetSetByCallerMagnitude(...);配置了相关的Set By Caller(本质上是一个TMap)
+	 */
+	float BaseDamage = 0.f;
+	int32 CurrentLightAttackComboCount = 0;
+	int32 CurrentHeavyAttackComboCount = 0;
+	for (const TPair<FGameplayTag, float>& TagMagnitude : EffectSpec.SetByCallerTagMagnitudes)
+	{
+		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Shared_SetByCaller_BaseDamage))
+		{
+			BaseDamage = TagMagnitude.Value;
+		}
+		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Player_SetByCaller_AttackType_Light))
+		{
+			CurrentLightAttackComboCount = TagMagnitude.Value;
+		}
+		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Player_SetByCaller_AttackType_Heavy))
+		{
+			CurrentHeavyAttackComboCount = TagMagnitude.Value;
+		}
+	}
+	
+	// 目标的防御力
+	float TargetDefensePower = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
+		GetWarriorDamageCapture().DefensePowerDef,
+		EvaluateParameters,
+		TargetDefensePower
+	);
 }
