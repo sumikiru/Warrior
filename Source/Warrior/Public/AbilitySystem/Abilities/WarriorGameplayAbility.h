@@ -44,7 +44,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability",
 		meta = (DisplayName = "Apply Gameplay Effect Spec Handle To Target Actor", ExpandEnumAsExecs = "OutSuccessType"))
 	FActiveGameplayEffectHandle BP_ApplyGameplayEffectSpecHandleToTarget(AActor* TargetActor, const FGameplayEffectSpecHandle& InSpecHandle,
-	                                                                     EWarriorSuccessType& OutSuccessType) const;
+	                                                                     EWarriorSuccessType& OutSuccessType);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Warrior|Ability")
 	EWarriorAbilityActivationPolicy AbilityActivationPolicy = EWarriorAbilityActivationPolicy::OnTriggered;

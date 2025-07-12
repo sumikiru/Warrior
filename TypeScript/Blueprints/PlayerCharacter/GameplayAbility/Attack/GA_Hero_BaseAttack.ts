@@ -26,7 +26,6 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
         // 由于该Ability触发前提是携带对应武器攻击，所以直接通过CurrentWeapon获取
         const ComboTag : UE.GameplayTag = this.GetCurrentWeaponCombatComponent().ProcessCombo(this.AbilityComboParentTag);
         // @note: 在ProcessCombo之后CurrentComboComboCount才是正常计数
-        super.TS_Lib_PrintDebugString(this.GetCurrentWeaponCombatComponent().GetCurrentComboCount().toString());
         super.TS_Lib_PlayMontageAndWait_AllSameEvents(
             $ref(this.AttackMontagesMap.Get(ComboTag) ?? null)/* 或者直接先对该map元素进行Nullish判断 */,
             (): void => {
@@ -38,7 +37,6 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
 
     /** 每次蒙太奇动画开始前准备 */
     TS_WaitForResetComboTimer() : void {
-        super.TS_Lib_PrintDebugString("Get Ready To Reset Combo Timer!!");
         super.TS_Lib_WaitGameplayEvent(
             $ref(UE.GameplayTag.CPP_RequestGameplayTag("Player.Combo.ResetComboTimer", true)),
             // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
@@ -59,7 +57,6 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
             UE.GameplayTag.CPP_RequestGameplayTag("Player.Combo.ResetComboTimer", true),
             Data
         );
-        super.TS_Lib_PrintDebugString("Reset!!");
     }
 
     TS_WaitForMeleeHitEvent() : void {
@@ -83,7 +80,6 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
     }
 
     TS_ApplyDamage(Payload : UE.GameplayEventData) : void {
-        super.TS_Lib_PrintDebugString("Hitting: " + Payload.EventTag.TagName);
         // MakeGameplayEffectSpecHandle
         const WeaponBaseDamage = this.GetHeroCombatComponentFromActorInfo()
             .GetHeroCurrentEquippedWeaponDamageAtLevel(
@@ -99,10 +95,31 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
         );
 
         // ApplyGameplayEffectSpecHandleToTarget
-        UE.WarriorGameplayAbility.CPP_ApplyGameplayEffectSpecHandleToTarget(
+        /**
+         * @note 成员函数，应该这样调用，同时注意puerts绑定方式：用的是Method而不是Function
+         * this.BP_ApplyGameplayEffectSpecHandleToTarget()蓝图版本更直接，但是TS无法修改枚举成员,修改$ref(IsSuccess)不生效
+         * 同时枚举成员比较很麻烦，详见后续备注
+         * 可以直接在cpp中新建一个TS_xxx方法，不采用枚举而是直接返回true/false来实现，更加方便
+         */
+        let ActiveGEHandle : UE.ActiveGameplayEffectHandle = this.CPP_ApplyGameplayEffectSpecHandleToTarget(
             Payload.Target,
             DamageGameplayEffectSpecHandle
         );
+        if (!(ActiveGEHandle.bPassedFiltersAndWasExecuted)) { // 即ActiveGEHandle.WasWasSuccessfullyApplied()
+            super.TS_Lib_PrintDebugString("Apply GameplayEffect Failed");
+        }
+        /**
+         * @note 是===不是==，=== 操作符要求左右两个操作数的类型和值都严格相等，
+         * == 操作符会先将两边隐式转换为数字0/1，然后进行比较
+         * 枚举之间是不兼容的：即使两个枚举内的成员完全一样，他们也不被认为是相同的类型。
+         * 同一枚举内的不同成员也会认为是不同的类型，因此IsSuccess === UE.EWarriorSuccessType.Successful无效
+         * 转换为数字或字符串比较是可行的，但是let IsSuccess = UE.EWarriorSuccessType.Successful;类型固定
+         */
+        /*let test : string = IsSuccess.toString();
+        let Suc : string = UE.EWarriorSuccessType.Successful.toString();
+        if (test === Suc) {
+            super.TS_Lib_PrintDebugString("Apply GameplayEffect Successfully");
+        }*/
     }
 
     /*TS_PlayMontageAndWait(): void {

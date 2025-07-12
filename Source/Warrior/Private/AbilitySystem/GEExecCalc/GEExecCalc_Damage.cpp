@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/GEExecCalc/GEExecCalc_Damage.h"
 
+#include "WarriorDebugHelper.h"
 #include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAttributeSet.h"
 
@@ -11,6 +12,7 @@ struct FWarriorDamageCapture
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackPower);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(DefensePower);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(DamageTaken);
 
 	FWarriorDamageCapture()
 	{
@@ -18,6 +20,7 @@ struct FWarriorDamageCapture
 		// 注意区分捕获的属性来源，Source or Target
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, AttackPower, Source, false); // 获取自身攻击力
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, DefensePower, Target, false); // 获取目标防御力
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, DamageTaken, Target, false); // 获取目标受到的伤害值
 	}
 };
 
@@ -54,6 +57,7 @@ UGEExecCalc_Damage::UGEExecCalc_Damage()
 
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().AttackPowerDef);
 	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().DefensePowerDef);
+	RelevantAttributesToCapture.Add(GetWarriorDamageCapture().DamageTakenDef);
 }
 
 void UGEExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -79,6 +83,7 @@ void UGEExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 		EvaluateParameters,
 		SourceAttackPower
 	);
+	Debug::Print(TEXT("SourceAttackPower"), SourceAttackPower);
 
 	/**
 	 * 在GameplayEffectSpec中检索伤害相关数据(Retrieve Hero Damage Info)
@@ -97,10 +102,12 @@ void UGEExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Player_SetByCaller_AttackType_Light))
 		{
 			CurrentLightAttackComboCount = TagMagnitude.Value;
+			Debug::Print(TEXT("CurrentLightAttackComboCount"), CurrentLightAttackComboCount);
 		}
 		if (TagMagnitude.Key.MatchesTagExact(WarriorGameplayTags::Player_SetByCaller_AttackType_Heavy))
 		{
 			CurrentHeavyAttackComboCount = TagMagnitude.Value;
+			Debug::Print(TEXT("CurrentHeavyAttackComboCount"), CurrentHeavyAttackComboCount);
 		}
 	}
 	
@@ -111,4 +118,35 @@ void UGEExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecu
 		EvaluateParameters,
 		TargetDefensePower
 	);
+	Debug::Print(TEXT("TargetDefensePower"), TargetDefensePower);
+
+	/** 执行自定义伤害计算 */
+	if (CurrentLightAttackComboCount != 0)
+	{
+		// ComboCount从1开始计数，表示是当前连招的第几段。第一段不会有额外伤害百分比加成
+		const float DamageIncreasePercentLight = (CurrentLightAttackComboCount - 1) * 0.05f + 1.f;
+		BaseDamage *= DamageIncreasePercentLight;
+		Debug::Print(TEXT("ScaledBaseDamageLight"), BaseDamage);
+	}
+	if (CurrentHeavyAttackComboCount != 0)
+	{
+		const float DamageIncreasePercentHeavy = (CurrentHeavyAttackComboCount - 1) * 0.15f + 1.f;
+		BaseDamage *= DamageIncreasePercentHeavy;
+		Debug::Print(TEXT("ScaledBaseDamageHeavy"), BaseDamage);
+	}
+
+	const float FinalDamage = BaseDamage * SourceAttackPower / TargetDefensePower;
+	Debug::Print(TEXT("FinalDamage"), FinalDamage);
+	// 伤害值大于0（有效伤害值），将FinalDamage作为输出值修改DamageTaken
+	// @note 这里使用占位符属性DamageTaken而不是直接修改CurrentHealth
+	if (FinalDamage > 0.f)
+	{
+		OutExecutionOutput.AddOutputModifier(
+			FGameplayModifierEvaluatedData(
+				GetWarriorDamageCapture().DamageTakenProperty,
+				EGameplayModOp::Override,
+				FinalDamage
+			)
+		);
+	}
 }

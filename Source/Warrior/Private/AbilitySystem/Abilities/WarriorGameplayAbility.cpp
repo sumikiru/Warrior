@@ -44,7 +44,7 @@ UPawnCombatComponent* UWarriorGameplayAbility::GetPawnCombatComponentFromActorIn
 UWarriorAbilitySystemComponent* UWarriorGameplayAbility::GetWarriorAbilitySystemComponentFromActorInfo() const
 {
 	// 直接借助ActorInfo获取，其他同理如GetAvatarActorFromActorInfo()
-	return Cast<UWarriorAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
+	return Cast<UWarriorAbilitySystemComponent>(GetCurrentActorInfo()->AbilitySystemComponent);
 }
 
 FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyGameplayEffectSpecHandleToTarget(AActor* TargetActor,
@@ -61,9 +61,9 @@ FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyGameplayEffectSp
 
 FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyGameplayEffectSpecHandleToTarget(AActor* TargetActor,
                                                                                               const FGameplayEffectSpecHandle& InSpecHandle,
-                                                                                              EWarriorSuccessType& OutSuccessType) const
+                                                                                              EWarriorSuccessType& OutSuccessType)
 {
-	const FActiveGameplayEffectHandle ActiveGEHandle = NativeApplyGameplayEffectSpecHandleToTarget(TargetActor, InSpecHandle);
+	const FActiveGameplayEffectHandle& ActiveGEHandle = NativeApplyGameplayEffectSpecHandleToTarget(TargetActor, InSpecHandle);
 	OutSuccessType = ActiveGEHandle.WasSuccessfullyApplied() ? EWarriorSuccessType::Successful : EWarriorSuccessType::Failed;
 
 	return ActiveGEHandle;

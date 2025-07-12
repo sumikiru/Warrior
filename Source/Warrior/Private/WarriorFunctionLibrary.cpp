@@ -43,8 +43,9 @@ struct FAutoRegisterForCppWarriorFunctionLibrary
 		puerts::DefineClass<FGameplayTag>()
 			.Function("CPP_RequestGameplayTag", MakeFunction(&FGameplayTag::RequestGameplayTag))
 			.Register();
+		// @note 是Method(成员函数绑定)，而不是Function(静态函数)
 		puerts::DefineClass<UWarriorGameplayAbility>()
-			.Function("CPP_ApplyGameplayEffectSpecHandleToTarget", MakeFunction(&UWarriorGameplayAbility::NativeApplyGameplayEffectSpecHandleToTarget))
+			.Method("CPP_ApplyGameplayEffectSpecHandleToTarget", MakeFunction(&UWarriorGameplayAbility::NativeApplyGameplayEffectSpecHandleToTarget))
 			.Register();
 	}
 };
