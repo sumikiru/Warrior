@@ -107,19 +107,18 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
         );
         if (!(ActiveGEHandle.bPassedFiltersAndWasExecuted)) { // 即ActiveGEHandle.WasWasSuccessfullyApplied()
             super.TS_Lib_PrintDebugString("Apply GameplayEffect Failed");
+            return;
         }
-        /**
-         * @note 是===不是==，=== 操作符要求左右两个操作数的类型和值都严格相等，
-         * == 操作符会先将两边隐式转换为数字0/1，然后进行比较
-         * 枚举之间是不兼容的：即使两个枚举内的成员完全一样，他们也不被认为是相同的类型。
-         * 同一枚举内的不同成员也会认为是不同的类型，因此IsSuccess === UE.EWarriorSuccessType.Successful无效
-         * 转换为数字或字符串比较是可行的，但是let IsSuccess = UE.EWarriorSuccessType.Successful;类型固定
-         */
-        /*let test : string = IsSuccess.toString();
-        let Suc : string = UE.EWarriorSuccessType.Successful.toString();
-        if (test === Suc) {
-            super.TS_Lib_PrintDebugString("Apply GameplayEffect Successfully");
-        }*/
+
+        // Hit React
+        //const LocalTargetActor = Payload.Target;
+        // 这样可以通过事件触发能力：K2_ActivateAbilityFromEvent()
+        UE.AbilitySystemBlueprintLibrary.SendGameplayEventToActor(
+            //LocalTargetActor,
+            Payload.Target,
+            UE.GameplayTag.CPP_RequestGameplayTag("Shared.Event.HitReact", true),
+            Payload
+        );
     }
 
     /*TS_PlayMontageAndWait(): void {
@@ -152,3 +151,17 @@ blueprint.mixin(jsClass, TS_GA_Hero_BaseAttack);
  * 注意一点：详见https://github.com/Tencent/puerts/issues/1233
  * K2_SetTimerDelegate的前提是delegate绑定到的对象是Actor类型
  */
+
+/**
+ * 关于===和枚举
+ * @note 是===不是==，=== 操作符要求左右两个操作数的类型和值都严格相等，
+ * == 操作符会先将两边隐式转换为数字0/1，然后进行比较
+ * 枚举之间是不兼容的：即使两个枚举内的成员完全一样，他们也不被认为是相同的类型。
+ * 同一枚举内的不同成员也会认为是不同的类型，因此IsSuccess === UE.EWarriorSuccessType.Successful无效
+ * 转换为数字或字符串比较是可行的，但是let IsSuccess = UE.EWarriorSuccessType.Successful;类型固定
+ */
+/*let test : string = IsSuccess.toString();
+let Suc : string = UE.EWarriorSuccessType.Successful.toString();
+if (test === Suc) {
+    super.TS_Lib_PrintDebugString("Apply GameplayEffect Successfully");
+}*/
