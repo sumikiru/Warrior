@@ -19,5 +19,13 @@
       * Make Gameplay Effect Spec Handle
       * Apply Handle To Target
       * Gameplay Effect Execution Calculation
-      * Clamp Values in AttributeSet
-    * UI
+        * Capture Relevant Attributes
+        * Retrieve Attribute Info
+        * Meta Attribute(DamageTaken) 
+      * Modify Health Attribute
+    * Combat Feedback
+      * Hit React
+      * Hit/Sound FX
+      * Camera Shake
+      * Death
+    * Notify UI
