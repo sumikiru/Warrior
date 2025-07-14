@@ -16,8 +16,10 @@ export function WaitLatentActionState(state: UE.LatentActionState) : Promise<voi
  * 加上async关键字的函数将会变成异步函数。
  * 参考https://blog.csdn.net/qq_40258073/article/details/108887291
  */
-export async function DelayNode(Duration : number) : Promise<void> {
-    console.warn("Begin to delay for " + Duration.toString() + " seconds...");
+export async function DelayNode(Duration : number, PrintToLog ?: boolean) : Promise<void> {
+    if (PrintToLog) {
+        console.warn("Begin to delay for " + Duration.toString() + " seconds...");
+    }
     let world : UE.World = (argv.getByName("GameInstance") as UE.GameInstance).GetWorld();
     let LatentActionState : UE.LatentActionState = new UE.LatentActionState();
 
@@ -29,17 +31,21 @@ export async function DelayNode(Duration : number) : Promise<void> {
 
     // WaitLatentActionState的Promise状态变为“已完成”时，外部 await 由此结束等待，之后才继续后面的代码
     await WaitLatentActionState(LatentActionState);
-    console.warn("Delay Finished");
+    if (PrintToLog) {
+        console.warn("Delay Finished");
+    }
 }
 
 // CompletedEvent指的是Delay结束后要执行的事件
-export function TS_Lib_Delay<T extends () => void>(Duration : number, CompletedEvent?: T) : void {
+export function TS_Lib_Delay<T extends () => void>(Duration : number, PrintToLog ?: boolean, CompletedEvent?: T) : void {
     // 该函数不是异步函数，所以不能直接使用await DelayNode(Duration);
-    DelayNode(Duration)
+    DelayNode(Duration, PrintToLog)
         .then(() : void => {
             if (CompletedEvent) {
                 CompletedEvent();
-                console.warn("Try CompletedEvent");
+                if (PrintToLog) {
+                    console.warn("Try CompletedEvent");
+                }
             }
         })
         .catch((reason) : void => { console.error(reason); });

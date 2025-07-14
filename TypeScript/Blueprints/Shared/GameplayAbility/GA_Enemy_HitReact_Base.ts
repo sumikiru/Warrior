@@ -25,6 +25,7 @@ class TS_GA_Enemy_HitReact_Base implements TS_GA_Enemy_HitReact_Base {
         // K2_ActivateAbilityFromEvent()不是异步函数，所以不能直接使用await DelayNode(2.0);
         AsyncUtils.TS_Lib_Delay(
             2.0,
+            true,
             () : void => {
                 this.K2_EndAbility();
             }

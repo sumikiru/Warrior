@@ -77,6 +77,12 @@ class TS_GA_Hero_BaseAttack implements TS_GA_Hero_BaseAttack {
              * 子类只能调用super.TS_ApplyDamage()而无法调用this.TS_ApplyDamage()
              */
             (Payload : UE.GameplayEventData) : void => {
+                // 会触发GameplayCueTag对应GC的OnExecute函数
+                UE.GameplayCueFunctionLibrary.ExecuteGameplayCueOnActor(
+                    this.GetOwningActorFromActorInfo(),
+                    this.WeaponHitSoundGameplayCueTag,
+                    new UE.GameplayCueParameters()
+                );
                 this.TS_ApplyDamage(Payload);
             }
         );

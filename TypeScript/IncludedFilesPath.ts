@@ -1,5 +1,7 @@
 import "./Blueprints/HotReloadTest/BP_Cube"
 
+import "./Blueprints/GameplayCues/GC_Hero_AxeHit"
+
 import "./Blueprints/PlayerCharacter/GameplayAbility/Equipping/GA_Hero_EquipAxe"
 import "./Blueprints/PlayerCharacter/GameplayAbility/Equipping/GA_Hero_UnequipAxe"
 import "./Blueprints/PlayerCharacter/GameplayAbility/Attack/GA_Hero_BaseAttack"

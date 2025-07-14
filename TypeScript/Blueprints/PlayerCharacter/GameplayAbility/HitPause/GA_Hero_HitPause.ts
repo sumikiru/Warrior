@@ -11,6 +11,7 @@ class TS_GA_Hero_HitPause implements TS_GA_Hero_HitPause {
         UE.GameplayStatics.SetGlobalTimeDilation(this.GetOwningActorFromActorInfo(), this.HitPauseTimeDilation);
         AsyncUtils.TS_Lib_Delay(
             0.02,
+            false,
             () : void => {
                 UE.GameplayStatics.SetGlobalTimeDilation(this.GetOwningActorFromActorInfo(), 1.0);
                 this.TS_CameraShake();
