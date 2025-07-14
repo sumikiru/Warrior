@@ -1,15 +1,15 @@
 import * as UE from 'ue';
+import * as AbilityTasks from "../../../../FunctionLibrary/AbilityTasks";
 import {$InRef, $ref, $unref, blueprint} from "puerts";
-import {TS_AbilityTaskFunctionLibrary} from "../../../../Interfaces/GameplayAbility/AbilityTaskFunctionLibrary";
 
 const uclass = UE.Class.Load("/Game/Blueprints/PlayerCharacter/GameplayAbility/Equipping/GA_Hero_UnequipAxe.GA_Hero_UnequipAxe_C");   // 注意_C后缀
 const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Equipping.GA_Hero_UnequipAxe.GA_Hero_UnequipAxe_C>(uclass);
 
 interface TS_GA_Hero_UnequipAxe extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Equipping.GA_Hero_UnequipAxe.GA_Hero_UnequipAxe_C {}
-class TS_GA_Hero_UnequipAxe extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_UnequipAxe {
+class TS_GA_Hero_UnequipAxe implements TS_GA_Hero_UnequipAxe {
     K2_ActivateAbility() {
         // Play Montage And Wait
-        super.TS_Lib_PlayMontageAndWait_EndAbility($ref(this.MontageToPlay));
+        AbilityTasks.TS_Lib_PlayMontageAndWait_EndAbility(this, $ref(this.MontageToPlay));
         // Clear Current Equipped Weapon Tag，注意现在应该在WaitGameplayEvent前执行，否则可能出现动画异常
         // 因为每一帧人物移动等动画会根据Weapon的CurrentEquippedWeaponTag来决定
         this.GetHeroCombatComponentFromActorInfo().CurrentEquippedWeaponTag = new UE.GameplayTag();
@@ -18,7 +18,10 @@ class TS_GA_Hero_UnequipAxe extends TS_AbilityTaskFunctionLibrary implements TS_
     }
 
     TS_WaitGameplayEvent(EventTag: $InRef<UE.GameplayTag>) : void {
-        super.TS_Lib_WaitGameplayEvent(EventTag, ()=>{
+        AbilityTasks.TS_Lib_WaitGameplayEvent(
+            this,
+            EventTag,
+            ()=>{
             // Attach Weapon To AxeBackSocket
             this.GetHeroCombatComponentFromActorInfo().GetHeroCarriedWeaponByTag(this.WeaponAxeTag)
                 .K2_AttachToComponent(

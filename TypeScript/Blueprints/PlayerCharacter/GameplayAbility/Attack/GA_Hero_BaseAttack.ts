@@ -1,13 +1,13 @@
 import * as UE from 'ue';
+import * as AbilityTasks from "../../../../FunctionLibrary/AbilityTasks";
 import {$ref, blueprint} from "puerts";
-import {TS_AbilityTaskFunctionLibrary} from "../../../../Interfaces/GameplayAbility/AbilityTaskFunctionLibrary";
 
 // 前提是设置为“每个Actor实例化”
 const uclass = UE.Class.Load("/Game/Blueprints/PlayerCharacter/GameplayAbility/Attack/GA_Hero_BaseAttack.GA_Hero_BaseAttack_C");
 const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Attack.GA_Hero_BaseAttack.GA_Hero_BaseAttack_C>(uclass);
 
 interface TS_GA_Hero_BaseAttack extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Attack.GA_Hero_BaseAttack.GA_Hero_BaseAttack_C {}
-class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_BaseAttack {
+class TS_GA_Hero_BaseAttack implements TS_GA_Hero_BaseAttack {
     K2_ActivateAbility() : void {
         // 动作开始时先重置一次
         this.GetCurrentWeaponCombatComponent().ResetComboTimer();
@@ -26,7 +26,8 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
         // 由于该Ability触发前提是携带对应武器攻击，所以直接通过CurrentWeapon获取
         const ComboTag : UE.GameplayTag = this.GetCurrentWeaponCombatComponent().ProcessCombo(this.AbilityComboParentTag);
         // @note: 在ProcessCombo之后CurrentComboComboCount才是正常计数
-        super.TS_Lib_PlayMontageAndWait_AllSameEvents(
+        AbilityTasks.TS_Lib_PlayMontageAndWait_AllSameEvents(
+            this,
             $ref(this.AttackMontagesMap.Get(ComboTag) ?? null)/* 或者直接先对该map元素进行Nullish判断 */,
             (): void => {
                 this.TS_NotifyResetComboTimer();
@@ -37,7 +38,8 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
 
     /** 每次蒙太奇动画开始前准备 */
     TS_WaitForResetComboTimer() : void {
-        super.TS_Lib_WaitGameplayEvent(
+        AbilityTasks.TS_Lib_WaitGameplayEvent(
+            this,
             $ref(UE.GameplayTag.CPP_RequestGameplayTag("Player.Combo.ResetComboTimer", true)),
             // 这里的Payload就是蓝图中WaitGameplayEvent节点中的Payload
             (Payload : UE.GameplayEventData): void => {
@@ -60,7 +62,8 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
     }
 
     TS_WaitForMeleeHitEvent() : void {
-        super.TS_Lib_WaitGameplayEvent(
+        AbilityTasks.TS_Lib_WaitGameplayEvent(
+            this,
             /**
              * 参考WarriorGameplayTags.cpp
              * 这样写是给出一种hardcode方案，除了在蓝图中定义一个GameplayTag变量外，还可以直接调用cpp的方法
@@ -106,7 +109,7 @@ class TS_GA_Hero_BaseAttack extends TS_AbilityTaskFunctionLibrary implements TS_
             DamageGameplayEffectSpecHandle
         );
         if (!(ActiveGEHandle.bPassedFiltersAndWasExecuted)) { // 即ActiveGEHandle.WasWasSuccessfullyApplied()
-            super.TS_Lib_PrintDebugString("Apply GameplayEffect Failed");
+            AbilityTasks.TS_Lib_PrintDebugString("Apply GameplayEffect Failed");
             return;
         }
 

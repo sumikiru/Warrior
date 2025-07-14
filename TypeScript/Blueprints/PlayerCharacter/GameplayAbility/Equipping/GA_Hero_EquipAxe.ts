@@ -1,26 +1,24 @@
 import * as UE from 'ue';
-import {GameplayAbilitySpecHandle, TArray} from 'ue';
+import * as AbilityTasks from "../../../../FunctionLibrary/AbilityTasks";
 import {$InRef, $ref, $unref, blueprint} from "puerts";
-import {TS_AbilityTaskFunctionLibrary} from "../../../../Interfaces/GameplayAbility/AbilityTaskFunctionLibrary";
 
 const uclass = UE.Class.Load("/Game/Blueprints/PlayerCharacter/GameplayAbility/Equipping/GA_Hero_EquipAxe.GA_Hero_EquipAxe_C");   // 注意_C后缀
 const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Equipping.GA_Hero_EquipAxe.GA_Hero_EquipAxe_C>(uclass);
 
 interface TS_GA_Hero_EquipAxe extends UE.Game.Blueprints.PlayerCharacter.GameplayAbility.Equipping.GA_Hero_EquipAxe.GA_Hero_EquipAxe_C {}
-class TS_GA_Hero_EquipAxe extends TS_AbilityTaskFunctionLibrary implements TS_GA_Hero_EquipAxe {
+class TS_GA_Hero_EquipAxe implements TS_GA_Hero_EquipAxe {
     K2_ActivateAbility() {
         // Play Montage And Wait
-        // @note: 这里应该调用super方法，this.TS_Lib_PlayMontageAndWait_EndAbility()会报错找不到方法
-        // 这一点和C++不同，注意。
-        super.TS_Lib_PlayMontageAndWait_EndAbility($ref(this.MontageToPlay));
-        //this.TS_Lib_PlayMontageAndWait_EndAbility($ref(this.MontageToPlay));
+        AbilityTasks.TS_Lib_PlayMontageAndWait_EndAbility(this, $ref(this.MontageToPlay));
         this.TS_WaitGameplayEvent($ref(this.EventTag));
-
         //this.K2_EndAbility();
     }
 
     TS_WaitGameplayEvent(EventTag: $InRef<UE.GameplayTag>): void {
-        super.TS_Lib_WaitGameplayEvent(EventTag, (): void => {
+        AbilityTasks.TS_Lib_WaitGameplayEvent(
+            this,
+            EventTag,
+            (): void => {
             // Attach Actor To Component
             this.GetHeroCombatComponentFromActorInfo().GetCharacterCarriedWeaponByTag(this.WeaponAxeTag)
                 .K2_AttachToComponent(
@@ -50,7 +48,7 @@ class TS_GA_Hero_EquipAxe extends TS_AbilityTaskFunctionLibrary implements TS_GA
             CachedHeroWeaponData.WeaponInputMappingContext,
             1 /* 如果按键相同，Priority高的按键映射会覆盖Priority低的按键映射 */);
         // 3.Grant Hero Weapon Abilities
-        let GrantedSpecHandles : TArray<GameplayAbilitySpecHandle> = UE.NewArray(UE.GameplayAbilitySpecHandle);
+        let GrantedSpecHandles : UE.TArray<UE.GameplayAbilitySpecHandle> = UE.NewArray(UE.GameplayAbilitySpecHandle);
         this.GetWarriorAbilitySystemComponentFromActorInfo().GrantHeroWeaponAbilities(
             CachedHeroWeaponData.DefaultWeaponAbilities,
             this.GetAbilityLevel(),

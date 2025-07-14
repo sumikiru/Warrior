@@ -1,13 +1,13 @@
 import * as UE from 'ue';
-import * as AsyncUtils from "../../../Interfaces/GameplayAbility/AsyncUtils";
+import * as AsyncUtils from "../../../FunctionLibrary/AsyncUtils";
+import * as AbilityTasks from "../../../FunctionLibrary/AbilityTasks";
 import {$ref, blueprint} from "puerts";
-import {TS_AbilityTaskFunctionLibrary} from "../../../Interfaces/GameplayAbility/AbilityTaskFunctionLibrary";
 
 const uclass = UE.Class.Load("/Game/Blueprints/Shared/GameplayAbility/GA_Enemy_HitReact_Base.GA_Enemy_HitReact_Base_C");   // 注意_C后缀
 const jsClass = blueprint.tojs<typeof UE.Game.Blueprints.Shared.GameplayAbility.GA_Enemy_HitReact_Base.GA_Enemy_HitReact_Base_C>(uclass);
 
 interface TS_GA_Enemy_HitReact_Base extends UE.Game.Blueprints.Shared.GameplayAbility.GA_Enemy_HitReact_Base.GA_Enemy_HitReact_Base_C {}
-class TS_GA_Enemy_HitReact_Base extends TS_AbilityTaskFunctionLibrary implements TS_GA_Enemy_HitReact_Base {
+class TS_GA_Enemy_HitReact_Base implements TS_GA_Enemy_HitReact_Base {
     // 使用K2_ActivateAbilityFromEvent而不是K2_ActivateAbility，因为这里GA由GameplayEvent触发(被动技能且需要条件触发)
     // 详见蓝图 类默认值->触发器->能力触发
     K2_ActivateAbilityFromEvent() : void {
@@ -27,7 +27,8 @@ class TS_GA_Enemy_HitReact_Base extends TS_AbilityTaskFunctionLibrary implements
         // 是否设置有对应的Hit React Montage
         if (this.HasHitReactMontageToPlay) {
             let RandomIndex : number = UE.KismetMathLibrary.RandomInteger(this.MontagesToPlay.Num());
-            super.TS_Lib_PlayMontageAndWait_EndAbility(
+            AbilityTasks.TS_Lib_PlayMontageAndWait_EndAbility(
+                this,
                 $ref(this.MontagesToPlay.Get(RandomIndex))
             );
             return;
