@@ -23,6 +23,7 @@ class WARRIOR_API UWarriorAttributeSet : public UAttributeSet
 
 public:
 	UWarriorAttributeSet();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
 	 * 修改发生前响应Attribute的CurrentValue(注意不是BaseValue)变化, 其是通过引用参数NewValue限制(Clamp)CurrentValue即将进行的修改的理想位置.
@@ -41,27 +42,41 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData &Data) override;
 
 	// 生命值
-	UPROPERTY(BlueprintReadOnly, Category = "Health")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = "OnRep_CurrentHealth", Category = "Health")
 	FGameplayAttributeData CurrentHealth;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, CurrentHealth);
-	UPROPERTY(BlueprintReadOnly, Category = "Health")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = "OnRep_MaxHealth", Category = "Health")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, MaxHealth);
 	// 怒气值
-	UPROPERTY(BlueprintReadOnly, Category = "Rage")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = "OnRep_CurrentRage", Category = "Rage")
 	FGameplayAttributeData CurrentRage;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, CurrentRage);
-	UPROPERTY(BlueprintReadOnly, Category = "Rage")
+	UPROPERTY(BlueprintReadOnly,  ReplicatedUsing = "OnRep_MaxRage",Category = "Rage")
 	FGameplayAttributeData MaxRage;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, MaxRage);
 	// 伤害相关
-	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = "OnRep_AttackPower", Category = "Damage")
 	FGameplayAttributeData AttackPower; //攻击力
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, AttackPower);
-	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = "OnRep_DefensePower", Category = "Damage")
 	FGameplayAttributeData DefensePower; //防御力
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, DefensePower);
 	UPROPERTY(BlueprintReadOnly, Category = "Damage")
-	FGameplayAttributeData DamageTaken; //受到的伤害值
+	FGameplayAttributeData DamageTaken; //受到的伤害值，Meta Attribute一般是不可同步的
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet, DamageTaken);
+
+	// 设置每个Attribute对应的服务器同步函数。OnRep函数需要调用GAMEPLAYATTRIBUTE_REPNOTIFY宏才能使用预测系统
+	UFUNCTION()
+	void OnRep_CurrentHealth(const FGameplayAttributeData& OldCurrentHealth) const;
+	UFUNCTION()
+	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
+	UFUNCTION()
+	void OnRep_CurrentRage(const FGameplayAttributeData& OldCurrentRage) const;
+	UFUNCTION()
+	void OnRep_MaxRage(const FGameplayAttributeData& OldMaxRage) const;
+	UFUNCTION()
+	void OnRep_AttackPower(const FGameplayAttributeData& OldAttackPower) const;
+	UFUNCTION()
+	void OnRep_DefensePower(const FGameplayAttributeData& OldDefensePower) const;
 };
