@@ -29,10 +29,13 @@ public:
 	//~ End IPawnCombatInterface
 
 protected:
-	//~ Begin APawn Interface
+	// 服务端初始化ASC
 	virtual void PossessedBy(AController* NewController) override;
-	//~ End APawn Interface
-	
+	// 客户端初始化ASC
+	virtual void OnRep_PlayerState() override;
+
+	// 初始化Player的时候，从PlayerState中获取ASC和AS，用以初始化Player的ASC和AS
+	virtual void InitWarriorAbilityActorInfo();
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;

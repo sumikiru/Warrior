@@ -9,8 +9,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "WarriorGameplayTags.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "AbilitySystem/WarriorAttributeSet.h"
 #include "Components/Combat/HeroCombatComponent.h"
 #include "Components/Input/WarriorInputComponent.h"
+#include "Controllers/WarriorHeroPlayerState.h"
 #include "DataAssets/Input/DataAsset_InputConfig.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -38,6 +40,9 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	// 注意要先设置好ASC和AS。对于Enemy直接在Begin中初始化ASC即可
+	InitWarriorAbilityActorInfo();
+	
 	/**
 	 * 不应使用IsValid()检查，软指针中的IsValid()表示是否已经加载完成。
 	 * 同步加载(Synchronous Loading)：
@@ -54,6 +59,38 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
 		}
 	}
+}
+
+void AWarriorHeroCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// 应该和PossessedBy的代码一样（以下代码来自Super::PossessedBy(NewController)的部分）
+	ensureMsgf(!CharacterStartUpData.IsNull(), TEXT("Forgot to assign start up data to %s"), *GetName());
+
+	// 注意要先设置好ASC和AS
+	InitWarriorAbilityActorInfo();
+
+	// 来自PossessedBy部分
+	if (!CharacterStartUpData.IsNull())
+	{
+		if (UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.LoadSynchronous())
+		{
+			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+		}
+	}
+}
+
+void AWarriorHeroCharacter::InitWarriorAbilityActorInfo()
+{
+	AWarriorHeroPlayerState* HeroPS = GetPlayerState<AWarriorHeroPlayerState>();
+	checkf(HeroPS, TEXT("Player State is not found!"));
+
+	WarriorAbilitySystemComponent = HeroPS->GetWarriorAbilitySystemComponent();
+	WarriorAttributeSet = HeroPS->GetWarriorAttributeSet();
+
+	// 初始化ASC的OwnerActor和AvatarActor
+	WarriorAbilitySystemComponent->InitAbilityActorInfo(HeroPS, this);
 }
 
 void AWarriorHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

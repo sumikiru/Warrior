@@ -17,6 +17,8 @@ class WARRIOR_API AWarriorEnemyCharacter : public AWarriorBaseCharacter
 
 public:
 	AWarriorEnemyCharacter();
+	// 对于AI控制的角色，ASC存在于Pawn中，通常在Pawn的BeginPlay()方法中完成ASC在服务器端和客户端的初始化
+	virtual void BeginPlay() override;
 	//~ Begin IPawnCombatInterface
 	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	//~ End IPawnCombatInterface

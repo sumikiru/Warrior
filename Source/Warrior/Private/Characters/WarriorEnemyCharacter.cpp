@@ -3,6 +3,8 @@
 
 #include "Characters/WarriorEnemyCharacter.h"
 
+#include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "AbilitySystem/WarriorAttributeSet.h"
 #include "Components/Combat/EnemyCombatComponent.h"
 #include "DataAssets/StartUpData/DataAsset_StartUpDataBase.h"
 #include "Engine/AssetManager.h"
@@ -10,7 +12,22 @@
 
 AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 {
+	// Enemy的ASC和AS直接在Character构造函数中实例化
+	WarriorAbilitySystemComponent = CreateDefaultSubobject<UWarriorAbilitySystemComponent>(TEXT("WarriorAbilitySystemComponent"));
+	WarriorAbilitySystemComponent->SetIsReplicated(true);	// 设置ASC用于在网络上复制
+	// 和Player（Mixed）不同，Enemy使用Minimal
+	WarriorAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	// AttributeSet本身(可视为ASC的一部分)不直接参与网络复制，由ASC处理并将AS中的数据同步到客户端
+	WarriorAttributeSet = CreateDefaultSubobject<UWarriorAttributeSet>(TEXT("WarriorAttributeSet"));
+	
 	EnemyCombatComponent = CreateDefaultSubobject<UEnemyCombatComponent>(TEXT("EnemyCombatComponent"));
+}
+
+void AWarriorEnemyCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	WarriorAbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 UPawnCombatComponent* AWarriorEnemyCharacter::GetPawnCombatComponent() const
