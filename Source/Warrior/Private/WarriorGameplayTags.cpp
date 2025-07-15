@@ -56,6 +56,7 @@ namespace WarriorGameplayTags
 	/** =======================================Shared Tags=============================================== */
 	// Ability Tags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_HitReact, "Shared.Ability.HitReact");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_Death, "Shared.Ability.Death");
 	
 	// Event Tags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Event_MeleeHit, "Shared.Event.MeleeHit");
@@ -63,5 +64,8 @@ namespace WarriorGameplayTags
 
 	// Set By Caller
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_BaseDamage, "Shared.SetByCaller.BaseDamage");
+
+	// Status Tags
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Dead, "Shared.Status.Dead");
 }
 

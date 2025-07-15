@@ -1,6 +1,7 @@
 import "./Blueprints/HotReloadTest/BP_Cube"
 
 import "./Blueprints/GameplayCues/GC_Hero_AxeHit"
+import "./Blueprints/GameplayCues/GC_Guardian_DeathSound"
 
 import "./Blueprints/PlayerCharacter/GameplayAbility/Equipping/GA_Hero_EquipAxe"
 import "./Blueprints/PlayerCharacter/GameplayAbility/Equipping/GA_Hero_UnequipAxe"
@@ -11,6 +12,7 @@ import "./Blueprints/PlayerCharacter/GameplayAbility/Attack/HeavyAttack/GA_Hero_
 import "./Blueprints/PlayerCharacter/GameplayAbility/Attack/HeavyAttack/GA_Hero_HeavyAttack_Axe"
 import "./Blueprints/PlayerCharacter/GameplayAbility/HitPause/GA_Hero_HitPause"
 
+import "./Blueprints/Shared/GameplayAbility/GA_Enemy_Death_Base"
 import "./Blueprints/Shared/GameplayAbility/GA_Enemy_HitReact_Base"
 import "./Blueprints/Shared/GameplayAbility/GA_Shared_SpawnWeapon_Base"
 

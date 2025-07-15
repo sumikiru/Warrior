@@ -4,6 +4,8 @@
 #include "AbilitySystem/WarriorAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "WarriorDebugHelper.h"
+#include "WarriorFunctionLibrary.h"
+#include "WarriorGameplayTags.h"
 
 UWarriorAttributeSet::UWarriorAttributeSet()
 {
@@ -23,7 +25,7 @@ void UWarriorAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribut
 	{
 		NewValue = FMath::Clamp<float>(NewValue, 0.f, GetMaxHealth());
 	}
-	
+
 	if (Attribute == GetCurrentRageAttribute())
 	{
 		NewValue = FMath::Clamp<float>(NewValue, 0.f, GetMaxRage());
@@ -73,7 +75,11 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
 		// todo: Notify the UI
 		if (NewCurrentHealth == 0.f)
 		{
-			//todo: Handle Character Death
+			// Handle Death：为Target的AvatarActor(注意)添加死亡状态标签
+			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(
+				Data.Target.GetAvatarActor(),
+				WarriorGameplayTags::Shared_Status_Dead
+			);
 		}
 	}
 }

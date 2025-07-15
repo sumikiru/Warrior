@@ -57,6 +57,7 @@ namespace WarriorGameplayTags
 	/** =======================================Shared Tags=============================================== */
 	// Ability Tags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Ability_HitReact);
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Ability_Death);
 	
 	// Event Tags
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Event_MeleeHit);
@@ -64,4 +65,7 @@ namespace WarriorGameplayTags
 
 	// Set By Caller
 	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_SetByCaller_BaseDamage);
+
+	// Status Tags
+	WARRIOR_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shared_Status_Dead);
 }
